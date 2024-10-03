@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kursanzeige VHS Steiermark</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Ink+Free&display=swap" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Ink+Free&display=swap');
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Roboto', sans-serif;
+            background-image: url('https://www.hohenberger-wallcoverings.com/media/0e/f6/4f/1658321671/vliestapete-warm-grey-wohnzimmer-precious-canvas-65175-closeup.jpg');
+            background-size: cover;
+            background-position: center;
+            background-color: rgba(255, 255, 255, 0.8);
+            color: #333;
+        }
+
+        #logo {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            max-width: 800px;
+            height: auto;
+            z-index: 10;
+            cursor: pointer;
+        }
+
+        #logoEingabe {
+            position: fixed;
+            top: 20px; /* Angepasst von 80px auf 20px */
+            right: 20px;
+            max-width: 400px;
+            height: auto;
+            z-index: 10;
+            cursor: pointer;
+            display: none;
+        }
+
+        #kursContainer {
+            min-height: 100vh;
+            min-width: 700px; /* Minimale Breite hinzugefügt */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding-top: 50px;
+            font-size: 2em;
+            font-weight: bold;
+            overflow: auto;
+        }
+
+        .kurs {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            width: auto;
+            max-width: 90%;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .kursHeader {
+            font-size: 3em;
+            margin-bottom: 20px;
+            font-weight: 700;
+            color: #4a90e2;
+            word-wrap: break-word;
+        }
+
+        .kursInfo {
+            font-size: 1.5em;
+            margin: 15px 0;
+            font-weight: 500; /* Schrift fetter gemacht */
+        }
+
+        button {
+            font-size: 1.2em;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        #eingabeFormular {
+            display: none;
+            position: absolute;
+            top: 10%;
+            left: 5%;
+            width: 90%;
+            display: flex;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #eingabeBereich {
+            width: 50%;
+        }
+
+        #kursListe {
+            width: 50%;
+            max-height: 70vh;
+            overflow-y: auto;
+            padding-left: 20px;
+            border-left: 2px solid #ccc;
+        }
+
+        input, button {
+            padding: 10px;
+            font-size: 1.2em;
+            margin: 5px;
+            width: 90%;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        #welcomeMessage {
+            font-size: 4em;
+            color: #4a90e2;
+            text-align: center;
+            font-family: 'Ink Free', sans-serif;
+            font-weight: bold;
+        }
+
+        #flower {
+            width: 150px;
+            height: auto;
+        }
+
+        /* Responsives Design */
+        @media (max-width: 768px) {
+            #eingabeFormular {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            #eingabeBereich, #kursListe {
+                width: 100%;
+            }
+
+            .kurs {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <img id="logo" src="grafik.png" alt="VHS Steiermark Logo" onclick="toggleAnsicht()">
+    <img id="logoEingabe" src="grafik.png" alt="VHS Steiermark Logo Eingabe" onclick="toggleAnsicht()">
+
+    <div id="kursContainer">
+        <div id="welcomeMessage">Herzlich Willkommen!</div>
+        <img id="flower" src="https://images.vexels.com/media/users/3/136640/isolated/preview/4c7840eff58d6a7aa853400a04939c4a-lila-blumensymbol-5.png" alt="Blume">
+    </div>
+
+    <div id="eingabeFormular">
+        <div id="eingabeBereich">
+            <label for="kursNummer">Kursnummer:</label><br>
+            <input type="text" id="kursNummer" placeholder="Kursnummer"><br>
+            <label for="kursName">Kursname:</label><br>
+            <input type="text" id="kursName" placeholder="Kursname"><br>
+            <label for="kursRaum">Kursraum:</label><br>
+            <input type="text" id="kursRaum" placeholder="Kursraum"><br>
+            <label for="kursUhrzeit">Uhrzeit:</label><br>
+            <input type="time" id="kursUhrzeit"><br>
+            <label for="kursDatum">Datum:</label><br>
+            <input type="date" id="kursDatum"><br>
+            <button onclick="kursHinzufuegen()">Kurs hinzufügen</button><br>
+            <label for="plusMinusAktiv">± Stunden Funktion aktiv:</label>
+            <input type="checkbox" id="plusMinusAktiv"><br>
+            <label for="plusMinusStunden">± Stunden einstellen:</label>
+            <input type="number" id="plusMinusStunden" value="2"><br>
+            <label for="csvInput">CSV-Import:</label>
+            <input type="file" id="csvInput" accept=".csv"><br>
+            <button onclick="csvImport()">Kurse erstellen</button><br>
+        </div>
+        <div id="kursListe"></div>
+    </div>
+
+    <script>
+        let kurse = [];
+        let aktuellerKursIndex = 0;
+
+        function toggleAnsicht() {
+            const formular = document.getElementById('eingabeFormular');
+            const container = document.getElementById('kursContainer');
+            const logo = document.getElementById('logo');
+            const logoEingabe = document.getElementById('logoEingabe');
+
+            if (formular.style.display === 'none' || formular.style.display === '') {
+                formular.style.display = 'flex';
+                container.style.display = 'none';
+                logo.style.display = 'none';
+                logoEingabe.style.display = 'block';
+                zeigeKurseListe();
+            } else {
+                formular.style.display = 'none';
+                container.style.display = 'flex';
+                logo.style.display = 'block';
+                logoEingabe.style.display = 'none';
+                zeigeAktuelleKurse();
+            }
+        }
+
+        function zeigeAktuelleKurse() {
+            const container = document.getElementById('kursContainer');
+            container.innerHTML = '';
+            if (kurse.length === 0) {
+                container.innerHTML = `
+                    <div id="welcomeMessage">Herzlich Willkommen!</div>
+                    <img id="flower" src="https://images.vexels.com/media/users/3/136640/isolated/preview/4c7840eff58d6a7aa853400a04939c4a-lila-blumensymbol-5.png" alt="Blume">
+                `;
+                return;
+            }
+
+            const kurs = kurse[aktuellerKursIndex % kurse.length];
+            const kursElement = document.createElement('div');
+            kursElement.className = 'kurs';
+            kursElement.innerHTML = `
+                <div class="kursHeader">
+                    <span class="kursNummer">${kurs.kursnummer}</span>
+                    ${kurs.kursname}
+                </div>
+                <div class="kursInfo">
+                    Kursraum: ${kurs.kursraum}
+                </div>
+                <div class="kursInfo">
+                    Kursbeginn: ${kurs.uhrzeit} Uhr
+                </div>
+            `;
+            container.appendChild(kursElement);
+
+            aktuellerKursIndex++;
+        }
+
+        function kursHinzufuegen() {
+            const kursnummer = document.getElementById('kursNummer').value.trim();
+            const kursname = document.getElementById('kursName').value.trim();
+            const kursraum = document.getElementById('kursRaum').value.trim();
+            const uhrzeit = document.getElementById('kursUhrzeit').value;
+            const datum = document.getElementById('kursDatum').value;
+
+            // Validierung der Eingaben
+            if (!kursnummer || !kursname || !kursraum || !uhrzeit || !datum) {
+                alert('Bitte füllen Sie alle Felder aus.');
+                return;
+            }
+
+            const neuerKurs = {
+                kursnummer: kursnummer,
+                kursname: kursname,
+                kursraum: kursraum,
+                uhrzeit: uhrzeit,
+                datum: datum
+            };
+
+            kurse.push(neuerKurs);
+            speichereKurse();
+            zeigeAktuelleKurse();
+            zeigeKurseListe();
+
+            // Formular zurücksetzen
+            document.getElementById('kursNummer').value = '';
+            document.getElementById('kursName').value = '';
+            document.getElementById('kursRaum').value = '';
+            document.getElementById('kursUhrzeit').value = '';
+            document.getElementById('kursDatum').value = '';
+        }
+
+        function zeigeKurseListe() {
+            const kursListe = document.getElementById('kursListe');
+            kursListe.innerHTML = '';
+
+            kurse.forEach((kurs, index) => {
+                const kursElement = document.createElement('div');
+                kursElement.className = 'kurs';
+                kursElement.innerHTML = `
+                    <div class="kursHeader">
+                        <span class="kursNummer">${kurs.kursnummer}</span>
+                        ${kurs.kursname}
+                    </div>
+                    <div class="kursInfo">
+                        Kursraum: ${kurs.kursraum}
+                    </div>
+                    <div class="kursInfo">
+                        Kursbeginn: ${kurs.uhrzeit} Uhr
+                    </div>
+                    <button onclick="kursLoeschen(${index})">Löschen</button>
+                `;
+                kursListe.appendChild(kursElement);
+            });
+        }
+
+        function kursLoeschen(index) {
+            kurse.splice(index, 1);
+            speichereKurse();
+            zeigeAktuelleKurse();
+            zeigeKurseListe();
+        }
+
+        function csvImport() {
+            const fileInput = document.getElementById('csvInput');
+            const file = fileInput.files[0];
+            if (!file) {
+                alert('Bitte wählen Sie eine CSV-Datei aus.');
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const csvData = e.target.result;
+                const rows = csvData.split('\n');
+                rows.forEach(row => {
+                    const columns = row.split(',');
+                    if (columns.length >= 5) {
+                        const [kursnummer, kursname, kursraum, uhrzeit, datum] = columns;
+                        if (kursnummer && kursname && kursraum && uhrzeit && datum) {
+                            const neuerKurs = {
+                                kursnummer: kursnummer.trim(),
+                                kursname: kursname.trim(),
+                                kursraum: kursraum.trim(),
+                                uhrzeit: uhrzeit.trim(),
+                                datum: datum.trim()
+                            };
+                            kurse.push(neuerKurs);
+                        }
+                    }
+                });
+                speichereKurse();
+                zeigeAktuelleKurse();
+                zeigeKurseListe();
+                // Datei-Input zurücksetzen
+                fileInput.value = '';
+            };
+            reader.readAsText(file);
+        }
+
+        function speichereKurse() {
+            localStorage.setItem('kurse', JSON.stringify(kurse));
+        }
+
+        function ladeKurse() {
+            const gespeicherteKurse = localStorage.getItem('kurse');
+            if (gespeicherteKurse) {
+                kurse = JSON.parse(gespeicherteKurse);
+            }
+        }
+
+        // Aktualisierung der Kurse alle 10 Sekunden
+        setInterval(() => {
+            const jetzt = new Date();
+            const plusMinusAktiv = document.getElementById('plusMinusAktiv').checked;
+            const plusMinusStunden = parseInt(document.getElementById('plusMinusStunden').value) || 2;
+
+            kurse = kurse.filter(kurs => {
+                const kursDatumZeit = new Date(`${kurs.datum}T${kurs.uhrzeit}`);
+                const diffStunden = (kursDatumZeit - jetzt) / (1000 * 60 * 60);
+
+                if (plusMinusAktiv) {
+                    // Zeige Kurse im Zeitfenster vor und nach Kursbeginn
+                    return Math.abs(diffStunden) <= plusMinusStunden;
+                } else {
+                    // Standardmäßig Kurse anzeigen, die in der Zukunft liegen oder bis zu 3 Stunden zurückliegen
+                    return diffStunden >= -3;
+                }
+            });
+
+            speichereKurse();
+
+            if (kurse.length === 0) {
+                const container = document.getElementById('kursContainer');
+                container.innerHTML = `
+                    <div id="welcomeMessage">Herzlich Willkommen!</div>
+                    <img id="flower" src="https://images.vexels.com/media/users/3/136640/isolated/preview/4c7840eff58d6a7aa853400a04939c4a-lila-blumensymbol-5.png" alt="Blume">
+                `;
+            } else {
+                zeigeAktuelleKurse();
+            }
+
+            zeigeKurseListe();
+        }, 10000);
+
+        window.onload = function() {
+            ladeKurse();
+            zeigeAktuelleKurse();
+            zeigeKurseListe();
+        };
+    </script>
+</body>
+</html>
+
