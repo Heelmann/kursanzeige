@@ -34,7 +34,7 @@
 
         #logoEingabe {
             position: fixed;
-            top: 20px; /* Angepasst von 80px auf 20px */
+            top: 20px;
             right: 20px;
             max-width: 400px;
             height: auto;
@@ -45,7 +45,7 @@
 
         #kursContainer {
             min-height: 100vh;
-            min-width: 700px; /* Minimale Breite hinzugefügt */
+            min-width: 700px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -80,7 +80,7 @@
         .kursInfo {
             font-size: 1.5em;
             margin: 15px 0;
-            font-weight: 500; /* Schrift fetter gemacht */
+            font-weight: 500;
         }
 
         button {
@@ -188,8 +188,27 @@
         <div id="kursListe"></div>
     </div>
 
+    <!-- Firebase SDKs eingebunden -->
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+
     <script>
+        // Deine Firebase-Konfigurationsdaten
+        const firebaseConfig = {
+            apiKey: "AIzaSyB_71ReFD37tPLOTh2bpjDUiwqEAJ19wUk",
+            authDomain: "kursanzeige.firebaseapp.com",
+            databaseURL: "https://kursanzeige-default-rtdb.firebaseio.com",
+            projectId: "kursanzeige",
+            storageBucket: "kursanzeige.appspot.com",
+            messagingSenderId: "905161161252",
+            appId: "1:905161161252:web:d09856a0d8ed913edbf6b1"
+        };
+
+        // Firebase initialisieren
+        firebase.initializeApp(firebaseConfig);
+
         let kurse = [];
+        let gefilterteKurse = [];
         let aktuellerKursIndex = 0;
 
         function toggleAnsicht() {
@@ -216,7 +235,7 @@
         function zeigeAktuelleKurse() {
             const container = document.getElementById('kursContainer');
             container.innerHTML = '';
-            if (kurse.length === 0) {
+            if (gefilterteKurse.length === 0) {
                 container.innerHTML = `
                     <div id="welcomeMessage">Herzlich Willkommen!</div>
                     <img id="flower" src="https://images.vexels.com/media/users/3/136640/isolated/preview/4c7840eff58d6a7aa853400a04939c4a-lila-blumensymbol-5.png" alt="Blume">
@@ -224,7 +243,7 @@
                 return;
             }
 
-            const kurs = kurse[aktuellerKursIndex % kurse.length];
+            const kurs = gefilterteKurse[aktuellerKursIndex % gefilterteKurse.length];
             const kursElement = document.createElement('div');
             kursElement.className = 'kurs';
             kursElement.innerHTML = `
@@ -267,6 +286,7 @@
 
             kurse.push(neuerKurs);
             speichereKurse();
+            aktualisiereGefilterteKurse();
             zeigeAktuelleKurse();
             zeigeKurseListe();
 
@@ -305,6 +325,7 @@
         function kursLoeschen(index) {
             kurse.splice(index, 1);
             speichereKurse();
+            aktualisiereGefilterteKurse();
             zeigeAktuelleKurse();
             zeigeKurseListe();
         }
@@ -337,6 +358,7 @@
                     }
                 });
                 speichereKurse();
+                aktualisiereGefilterteKurse();
                 zeigeAktuelleKurse();
                 zeigeKurseListe();
                 // Datei-Input zurücksetzen
@@ -346,23 +368,27 @@
         }
 
         function speichereKurse() {
-            localStorage.setItem('kurse', JSON.stringify(kurse));
+            // Kurse in Firebase speichern
+            firebase.database().ref('kurse').set(kurse);
         }
 
         function ladeKurse() {
-            const gespeicherteKurse = localStorage.getItem('kurse');
-            if (gespeicherteKurse) {
-                kurse = JSON.parse(gespeicherteKurse);
-            }
+            // Kurse aus Firebase laden
+            firebase.database().ref('kurse').on('value', function(snapshot) {
+                const data = snapshot.val();
+                kurse = data ? data : [];
+                aktualisiereGefilterteKurse();
+                zeigeAktuelleKurse();
+                zeigeKurseListe();
+            });
         }
 
-        // Aktualisierung der Kurse alle 10 Sekunden
-        setInterval(() => {
+        function aktualisiereGefilterteKurse() {
             const jetzt = new Date();
             const plusMinusAktiv = document.getElementById('plusMinusAktiv').checked;
             const plusMinusStunden = parseInt(document.getElementById('plusMinusStunden').value) || 2;
 
-            kurse = kurse.filter(kurs => {
+            gefilterteKurse = kurse.filter(kurs => {
                 const kursDatumZeit = new Date(`${kurs.datum}T${kurs.uhrzeit}`);
                 const diffStunden = (kursDatumZeit - jetzt) / (1000 * 60 * 60);
 
@@ -374,28 +400,17 @@
                     return diffStunden >= -3;
                 }
             });
+        }
 
-            speichereKurse();
-
-            if (kurse.length === 0) {
-                const container = document.getElementById('kursContainer');
-                container.innerHTML = `
-                    <div id="welcomeMessage">Herzlich Willkommen!</div>
-                    <img id="flower" src="https://images.vexels.com/media/users/3/136640/isolated/preview/4c7840eff58d6a7aa853400a04939c4a-lila-blumensymbol-5.png" alt="Blume">
-                `;
-            } else {
-                zeigeAktuelleKurse();
-            }
-
-            zeigeKurseListe();
+        // Wechsel des angezeigten Kurses und Aktualisierung der gefilterten Kurse alle 10 Sekunden
+        setInterval(() => {
+            aktualisiereGefilterteKurse();
+            zeigeAktuelleKurse();
         }, 10000);
 
         window.onload = function() {
             ladeKurse();
-            zeigeAktuelleKurse();
-            zeigeKurseListe();
         };
     </script>
 </body>
 </html>
-
