@@ -284,8 +284,13 @@
                 datum: datum
             };
 
+            // Kurs in Firebase speichern
+            const newKursRef = firebase.database().ref('kurse').push();
+            neuerKurs.id = newKursRef.key; // Eindeutige ID speichern
+            newKursRef.set(neuerKurs);
+
+            // Kurs zur lokalen Liste hinzufügen
             kurse.push(neuerKurs);
-            speichereKurse();
             aktualisiereGefilterteKurse();
             zeigeAktuelleKurse();
             zeigeKurseListe();
@@ -323,8 +328,12 @@
         }
 
         function kursLoeschen(index) {
+            const kurs = kurse[index];
+            if (kurs && kurs.id) {
+                // Kurs aus Firebase entfernen
+                firebase.database().ref('kurse/' + kurs.id).remove();
+            }
             kurse.splice(index, 1);
-            speichereKurse();
             aktualisiereGefilterteKurse();
             zeigeAktuelleKurse();
             zeigeKurseListe();
@@ -353,11 +362,14 @@
                                 uhrzeit: uhrzeit.trim(),
                                 datum: datum.trim()
                             };
+                            // Kurs in Firebase speichern
+                            const newKursRef = firebase.database().ref('kurse').push();
+                            neuerKurs.id = newKursRef.key;
+                            newKursRef.set(neuerKurs);
                             kurse.push(neuerKurs);
                         }
                     }
                 });
-                speichereKurse();
                 aktualisiereGefilterteKurse();
                 zeigeAktuelleKurse();
                 zeigeKurseListe();
@@ -367,16 +379,14 @@
             reader.readAsText(file);
         }
 
-        function speichereKurse() {
-            // Kurse in Firebase speichern
-            firebase.database().ref('kurse').set(kurse);
-        }
-
         function ladeKurse() {
             // Kurse aus Firebase laden
             firebase.database().ref('kurse').on('value', function(snapshot) {
-                const data = snapshot.val();
-                kurse = data ? data : [];
+                kurse = [];
+                snapshot.forEach(function(childSnapshot) {
+                    const kurs = childSnapshot.val();
+                    kurse.push(kurs);
+                });
                 aktualisiereGefilterteKurse();
                 zeigeAktuelleKurse();
                 zeigeKurseListe();
