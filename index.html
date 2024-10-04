@@ -206,6 +206,7 @@
 
         // Firebase initialisieren
         firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
 
         let kurse = [];
         let gefilterteKurse = [];
@@ -284,16 +285,23 @@
                 datum: datum
             };
 
-            // Kurs in Firebase speichern
-            const newKursRef = firebase.database().ref('kurse').push();
-            neuerKurs.id = newKursRef.key; // Eindeutige ID speichern
-            newKursRef.set(neuerKurs);
+            console.log('Speichere Kurs in Firebase:', neuerKurs);
 
-            // Kurs zur lokalen Liste hinzufügen
-            kurse.push(neuerKurs);
-            aktualisiereGefilterteKurse();
-            zeigeAktuelleKurse();
-            zeigeKurseListe();
+            // Kurs in Firebase speichern
+            const newKursRef = database.ref('kurse').push();
+            neuerKurs.id = newKursRef.key; // Eindeutige ID speichern
+            newKursRef.set(neuerKurs)
+                .then(() => {
+                    console.log('Kurs erfolgreich gespeichert');
+                    // Kurs zur lokalen Liste hinzufügen
+                    kurse.push(neuerKurs);
+                    aktualisiereGefilterteKurse();
+                    zeigeAktuelleKurse();
+                    zeigeKurseListe();
+                })
+                .catch((error) => {
+                    console.error('Fehler beim Speichern des Kurses:', error);
+                });
 
             // Formular zurücksetzen
             document.getElementById('kursNummer').value = '';
@@ -330,13 +338,24 @@
         function kursLoeschen(index) {
             const kurs = kurse[index];
             if (kurs && kurs.id) {
-                // Kurs aus Firebase entfernen
-                firebase.database().ref('kurse/' + kurs.id).remove();
+                console.log('Lösche Kurs aus Firebase:', kurs.id);
+                database.ref('kurse/' + kurs.id).remove()
+                    .then(() => {
+                        console.log('Kurs erfolgreich gelöscht');
+                        kurse.splice(index, 1);
+                        aktualisiereGefilterteKurse();
+                        zeigeAktuelleKurse();
+                        zeigeKurseListe();
+                    })
+                    .catch((error) => {
+                        console.error('Fehler beim Löschen des Kurses:', error);
+                    });
+            } else {
+                kurse.splice(index, 1);
+                aktualisiereGefilterteKurse();
+                zeigeAktuelleKurse();
+                zeigeKurseListe();
             }
-            kurse.splice(index, 1);
-            aktualisiereGefilterteKurse();
-            zeigeAktuelleKurse();
-            zeigeKurseListe();
         }
 
         function csvImport() {
@@ -363,16 +382,22 @@
                                 datum: datum.trim()
                             };
                             // Kurs in Firebase speichern
-                            const newKursRef = firebase.database().ref('kurse').push();
+                            const newKursRef = database.ref('kurse').push();
                             neuerKurs.id = newKursRef.key;
-                            newKursRef.set(neuerKurs);
-                            kurse.push(neuerKurs);
+                            newKursRef.set(neuerKurs)
+                                .then(() => {
+                                    console.log('Kurs aus CSV erfolgreich gespeichert');
+                                    kurse.push(neuerKurs);
+                                    aktualisiereGefilterteKurse();
+                                    zeigeAktuelleKurse();
+                                    zeigeKurseListe();
+                                })
+                                .catch((error) => {
+                                    console.error('Fehler beim Speichern des Kurses aus CSV:', error);
+                                });
                         }
                     }
                 });
-                aktualisiereGefilterteKurse();
-                zeigeAktuelleKurse();
-                zeigeKurseListe();
                 // Datei-Input zurücksetzen
                 fileInput.value = '';
             };
@@ -380,16 +405,19 @@
         }
 
         function ladeKurse() {
-            // Kurse aus Firebase laden
-            firebase.database().ref('kurse').on('value', function(snapshot) {
+            console.log('Lade Kurse aus Firebase');
+            database.ref('kurse').on('value', function(snapshot) {
                 kurse = [];
                 snapshot.forEach(function(childSnapshot) {
                     const kurs = childSnapshot.val();
                     kurse.push(kurs);
                 });
+                console.log('Kurse geladen:', kurse);
                 aktualisiereGefilterteKurse();
                 zeigeAktuelleKurse();
                 zeigeKurseListe();
+            }, function(error) {
+                console.error('Fehler beim Laden der Kurse:', error);
             });
         }
 
