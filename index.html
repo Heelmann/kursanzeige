@@ -4,16 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kursanzeige VHS Steiermark</title>
-    <!-- Google Fonts Einbindung für Calibri Alternative -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         body, html {
             margin: 0;
             padding: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
             font-family: 'Open Sans', sans-serif;
             background-color: white;
             color: #071e31;
-            overflow-x: hidden; /* Verhindert horizontales Scrollen */
+        }
+
+        #scaleContainer {
+            width: 1920px; /* Anpassen an die Breite Ihres Originaldesigns */
+            height: 1080px; /* Anpassen an die Höhe Ihres Originaldesigns */
+            transform-origin: top left;
+            position: absolute;
+            top: 0;
+            left: 0;
         }
 
         #logoContainer {
@@ -42,8 +52,8 @@
             flex-direction: column;
             justify-content: flex-start;
             align-items: flex-start;
-            padding: 20px;
-            padding-top: 20px;
+            padding: 110px;
+            padding-top: 40px;
         }
 
         #welcomeMessage {
@@ -68,14 +78,14 @@
             color: #071e31;
             text-align: left;
             font-weight: normal;
-            margin-bottom: 80px; /* Geändert von 10px auf 80px */
+            margin-bottom: 80px;
             font-family: 'Open Sans', sans-serif;
             margin-left: 300px;
         }
 
         .kurseList {
-            width: 80%;
-            max-width: 2000px;
+            width: 100%;
+            max-width: 2200px;
             margin: 0 auto;
             display: flex;
             flex-direction: column;
@@ -153,7 +163,6 @@
             float: right;
         }
 
-        /* Reduziert die Größe der Kurse auf der Eingabeseite */
         #eingabeFormular .kurs {
             font-size: 1em;
             padding: 10px 0;
@@ -178,380 +187,346 @@
         button {
             cursor: pointer;
         }
-
-        @media (max-width: 1200px) {
-            /* Anpassungen für kleinere Bildschirme */
-            #welcomeMessage {
-                font-size: 30pt;
-            }
-
-            #todayMessage {
-                font-size: 50pt;
-                margin-left: 0;
-                margin-bottom: 40px;
-            }
-
-            .kurs {
-                font-size: 2em;
-            }
-
-            #akLogo {
-                width: 200px;
-            }
-
-            #logo {
-                width: 400px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            #kursContainer {
-                padding: 10px;
-            }
-
-            #welcomeMessage {
-                font-size: 20pt;
-            }
-
-            #welcomeMessage img {
-                height: 40pt;
-            }
-
-            #todayMessage {
-                font-size: 30pt;
-                margin-left: 0;
-                margin-bottom: 20px;
-            }
-
-            .kurseList {
-                width: 100%;
-            }
-
-            .kurs {
-                font-size: 1.5em;
-                padding: 10px 0;
-            }
-
-            .kursZeit, .kursNummer, .kursRaum {
-                margin-right: 10px;
-                min-width: auto;
-            }
-
-            #logo {
-                width: 200px;
-            }
-
-            #akLogo {
-                width: 100px;
-                margin-left: 20px;
-            }
-        }
     </style>
 </head>
 <body>
-    <div id="logoContainer">
-        <img id="logo" src="grafik.png" alt="VHS Steiermark Logo" onclick="toggleAnsicht()">
-        <img id="akLogo" src="https://www.arbeiterkammer.at/infopool/aklogo/AKSteiermark.svg" alt="AK Steiermark Logo">
-    </div>
-
-    <div id="kursContainer">
-        <div id="welcomeMessage">
-            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6EUG02OD-c8u71gFoSpkPG7rFPRicotTLqw&s" alt="Herz">
-            Herzlich Willkommen
+    <div id="scaleContainer">
+        <div id="logoContainer">
+            <img id="logo" src="grafik.png" alt="VHS Steiermark Logo" onclick="toggleAnsicht()">
+            <img id="akLogo" src="https://www.arbeiterkammer.at/infopool/aklogo/AKSteiermark.svg" alt="AK Steiermark Logo">
         </div>
-        <div id="todayMessage">HEUTIGE VHS KURSE</div>
-        <div class="kurseList" id="kurseList"></div>
-    </div>
 
-    <div id="eingabeFormular">
-        <div id="eingabeBereich">
-            <label for="kursNummer">Kursnummer:</label><br>
-            <input type="text" id="kursNummer" placeholder="Kursnummer"><br>
-            <label for="kursName">Kursname:</label><br>
-            <input type="text" id="kursName" placeholder="Kursname"><br>
-            <label for="kursRaum">Kursraum:</label><br>
-            <input type="text" id="kursRaum" placeholder="Kursraum"><br>
-            <label for="kursUhrzeit">Uhrzeit:</label><br>
-            <input type="time" id="kursUhrzeit"><br>
-            <label for="kursDatum">Datum:</label><br>
-            <input type="date" id="kursDatum"><br>
-            <button id="kursHinzufuegenButton" onclick="kursHinzufuegen()">Kurs hinzufügen</button><br>
-            <label for="plusMinusAktiv">± Stunden Funktion aktiv:</label>
-            <input type="checkbox" id="plusMinusAktiv"><br>
-            <label for="plusMinusStunden">± Stunden einstellen:</label>
-            <input type="number" id="plusMinusStunden" value="2"><br>
-            <label for="csvInput">CSV-Import:</label>
-            <input type="file" id="csvInput" accept=".csv"><br>
-            <button onclick="csvImport()">Kurse erstellen</button><br>
+        <div id="kursContainer">
+            <div id="welcomeMessage">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6EUG02OD-c8u71gFoSpkPG7rFPRicotTLqw&s" alt="Herz">
+                Herzlich Willkommen
+            </div>
+            <div id="todayMessage">HEUTIGE VHS KURSE</div>
+            <div class="kurseList" id="kurseList"></div>
         </div>
-        <div id="kursListe"></div>
-    </div>
 
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+        <div id="eingabeFormular">
+            <div id="eingabeBereich">
+                <label for="kursNummer">Kursnummer:</label><br>
+                <input type="text" id="kursNummer" placeholder="Kursnummer"><br>
+                <label for="kursName">Kursname:</label><br>
+                <input type="text" id="kursName" placeholder="Kursname"><br>
+                <label for="kursRaum">Kursraum:</label><br>
+                <input type="text" id="kursRaum" placeholder="Kursraum"><br>
+                <label for="kursUhrzeit">Uhrzeit:</label><br>
+                <input type="time" id="kursUhrzeit"><br>
+                <label for="kursDatum">Datum:</label><br>
+                <input type="date" id="kursDatum"><br>
+                <button id="kursHinzufuegenButton" onclick="kursHinzufuegen()">Kurs hinzufügen</button><br>
+                <label for="plusMinusAktiv">± Stunden Funktion aktiv:</label>
+                <input type="checkbox" id="plusMinusAktiv"><br>
+                <label for="plusMinusStunden">± Stunden einstellen:</label>
+                <input type="number" id="plusMinusStunden" value="2"><br>
+                <label for="csvInput">CSV-Import:</label>
+                <input type="file" id="csvInput" accept=".csv"><br>
+                <button onclick="csvImport()">Kurse erstellen</button><br>
+            </div>
 
-    <script>
-        // Firebase Konfiguration
-        const firebaseConfig = {
-  apiKey: "AIzaSyB_7R1eFD37tPLoTh2bpjDUiwqEAJ19wUk",
-  authDomain: "kursanzeige.firebaseapp.com",
-  databaseURL: "https://kursanzeige-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "kursanzeige",
-  storageBucket: "kursanzeige.appspot.com",
-  messagingSenderId: "905161161252",
-  appId: "1:905161161252:web:d09856a0d8ed913edbf6b1"
-};
+            <div id="sortierOptionen">
+                <label for="sortierKriterium">Sortieren nach:</label>
+                <select id="sortierKriterium" onchange="sortiereKurse()">
+                    <option value="kursnummer">Kursnummer</option>
+                    <option value="kursname">Kursname</option>
+                    <option value="kursraum">Kursraum</option>
+                    <option value="uhrzeit">Uhrzeit</option>
+                </select>
+            </div>
 
-        // Firebase initialisieren
-        firebase.initializeApp(firebaseConfig);
+            <div id="kursListe"></div>
+        </div>
+        <!-- Firebase SDKs -->
+        <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
 
-        let kurse = [];
-        let gefilterteKurse = [];
-        let aktuellerKursIndex = 0;
-        let currentEditingIndex = -1;
-        let kursTimeout; // Variable für Timeout
-
-        function toggleAnsicht() {
-            const formular = document.getElementById('eingabeFormular');
-            const container = document.getElementById('kursContainer');
-
-            if (formular.style.display === 'none' || formular.style.display === '') {
-                formular.style.display = 'block';
-                container.style.display = 'none';
-                zeigeKurseListe();
-            } else {
-                formular.style.display = 'none';
-                container.style.display = 'flex';
-                zeigeAktuelleKurse();
-            }
-        }
-
-        function zeigeAktuelleKurse() {
-            const kurseList = document.getElementById('kurseList');
-
-            // Start fade-out
-            kurseList.style.opacity = 0;
-
-            // Wait for fade-out to complete
-            setTimeout(() => {
-                // Inhalt aktualisieren
-                kurseList.innerHTML = '';
-
-                if (gefilterteKurse.length === 0) {
-                    kurseList.innerHTML = '<div style="text-align:center;">Keine Kurse verfügbar.</div>';
-                } else {
-                    const startIndex = aktuellerKursIndex;
-                    const endIndex = Math.min(startIndex + 4, gefilterteKurse.length);
-                    const anzuzeigendeKurse = gefilterteKurse.slice(startIndex, endIndex);
-
-                    // Immer 4 Kurse anzeigen, auch wenn weniger Kurse vorhanden sind
-                    for (let i = 0; i < 4; i++) {
-                        const kurs = anzuzeigendeKurse[i];
-                        if (kurs) {
-                            const kursElement = document.createElement('div');
-                            kursElement.className = 'kurs';
-                            kursElement.innerHTML = `
-                                <div class="kursInfo">
-                                    <span class="kursZeit">${kurs.uhrzeit}</span>
-                                    <span class="kursNummer">${kurs.kursnummer}</span>
-                                    <span class="kursName">${kurs.kursname}</span>
-                                </div>
-                                <span class="kursRaum">${kurs.kursraum}</span>
-                            `;
-                            kurseList.appendChild(kursElement);
-                        } else {
-                            // Leeren Platzhalter hinzufügen, um Layout konsistent zu halten
-                            const platzhalter = document.createElement('div');
-                            platzhalter.className = 'kurs';
-                            platzhalter.innerHTML = `
-                                <div class="kursInfo">
-                                    <span class="kursZeit"></span>
-                                    <span class="kursNummer"></span>
-                                    <span class="kursName"></span>
-                                </div>
-                                <span class="kursRaum"></span>
-                            `;
-                            kurseList.appendChild(platzhalter);
-                        }
-                    }
-                }
-
-                // Start fade-in
-                kurseList.style.opacity = 1;
-
-                // Timeout für den nächsten Wechsel setzen
-                if (gefilterteKurse.length > 4) {
-                    aktuellerKursIndex += 4;
-                    if (aktuellerKursIndex >= gefilterteKurse.length) {
-                        aktuellerKursIndex = 0;
-                    }
-                    if (kursTimeout) {
-                        clearTimeout(kursTimeout);
-                    }
-                    // Timeout nach 18 Sekunden setzen (Gesamtzeit 20 Sekunden)
-                    kursTimeout = setTimeout(zeigeAktuelleKurse, 18000);
-                } else {
-                    // Wenn weniger oder genau 4 Kurse vorhanden sind, muss kein Timeout gesetzt werden
-                    if (kursTimeout) {
-                        clearTimeout(kursTimeout);
-                    }
-                }
-
-            }, 1000); // Wartezeit entspricht der Transition-Dauer
-        }
-
-        function kursHinzufuegen() {
-            const kursnummer = document.getElementById('kursNummer').value.trim();
-            const kursname = document.getElementById('kursName').value.trim();
-            const kursraum = document.getElementById('kursRaum').value.trim();
-            const uhrzeit = document.getElementById('kursUhrzeit').value;
-            const datum = document.getElementById('kursDatum').value;
-
-            if (!kursnummer || !kursname || !kursraum || !uhrzeit || !datum) {
-                alert('Bitte füllen Sie alle Felder aus.');
-                return;
-            }
-
-            const neuerKurs = {
-                kursnummer: kursnummer,
-                kursname: kursname,
-                kursraum: kursraum,
-                uhrzeit: uhrzeit,
-                datum: datum
+        <script>
+            // Firebase Konfiguration
+            const firebaseConfig = {
+               apiKey: "AIzaSyB_71ReFD37tPLOTh2bpjDUiwqEAJ19wUk",
+                authDomain: "kursanzeige.firebaseapp.com",
+                databaseURL: "https://kursanzeige-default-rtdb.europe-west1.firebasedatabase.app/",
+                projectId: "kursanzeige",
+                storageBucket: "kursanzeige.appspot.com",
+                messagingSenderId: "905161161252",
+                appId: "1:905161161252:web:d09856a0d8ed913edbf6b1"
             };
 
-            if (currentEditingIndex >= 0) {
-                kurse[currentEditingIndex] = neuerKurs;
-                currentEditingIndex = -1;
-                document.getElementById('kursHinzufuegenButton').innerText = 'Kurs hinzufügen';
-            } else {
-                kurse.push(neuerKurs);
+            // Firebase initialisieren
+            firebase.initializeApp(firebaseConfig);
+            console.log("Firebase initialized");
+
+            let kurse = [];
+            let gefilterteKurse = [];
+            let aktuellerKursIndex = 0;
+            let currentEditingIndex = -1;
+            let kursTimeout;
+
+            function toggleAnsicht() {
+                const formular = document.getElementById('eingabeFormular');
+                const container = document.getElementById('kursContainer');
+
+                if (formular.style.display === 'none' || formular.style.display === '') {
+                    formular.style.display = 'block';
+                    container.style.display = 'none';
+                    zeigeKurseListe();
+                } else {
+                    formular.style.display = 'none';
+                    container.style.display = 'flex';
+                    aktualisiereGefilterteKurse();
+                }
             }
 
-            speichereKurse();
-            aktualisiereGefilterteKurse();
-            zeigeKurseListe();
+            function zeigeAktuelleKurse() {
+                const kurseList = document.getElementById('kurseList');
 
-            // Formular zurücksetzen
-            document.getElementById('kursNummer').value = '';
-            document.getElementById('kursName').value = '';
-            document.getElementById('kursRaum').value = '';
-            document.getElementById('kursUhrzeit').value = '';
-            document.getElementById('kursDatum').value = '';
-        }
+                kurseList.style.opacity = 0;
 
-        function zeigeKurseListe() {
-            const kursListe = document.getElementById('kursListe');
-            kursListe.innerHTML = '';
+                setTimeout(() => {
+                    kurseList.innerHTML = '';
 
-            kurse.forEach((kurs, index) => {
-                const kursElement = document.createElement('div');
-                kursElement.className = 'kurs';
-                kursElement.innerHTML = `
-                    <div class="kursInfo">
-                        <span class="kursZeit">${kurs.uhrzeit}</span>
-                        <span class="kursNummer">${kurs.kursnummer}</span>
-                        <span class="kursName">${kurs.kursname}</span>
-                    </div>
-                    <span class="kursRaum">${kurs.kursraum}</span>
-                    <button onclick="kursBearbeiten(${index})">Bearbeiten</button>
-                    <button onclick="kursLoeschen(${index})">Löschen</button>
-                `;
-                kursListe.appendChild(kursElement);
-            });
-        }
+                    if (gefilterteKurse.length === 0) {
+                        kurseList.innerHTML = '<div style="text-align:center;">Keine Kurse verfügbar.</div>';
+                    } else {
+                        const startIndex = aktuellerKursIndex;
+                        const endIndex = Math.min(startIndex + 4, gefilterteKurse.length);
+                        const anzuzeigendeKurse = gefilterteKurse.slice(startIndex, endIndex);
 
-        function kursBearbeiten(index) {
-            const kurs = kurse[index];
-            document.getElementById('kursNummer').value = kurs.kursnummer;
-            document.getElementById('kursName').value = kurs.kursname;
-            document.getElementById('kursRaum').value = kurs.kursraum;
-            document.getElementById('kursUhrzeit').value = kurs.uhrzeit;
-            document.getElementById('kursDatum').value = kurs.datum;
-            currentEditingIndex = index;
-            document.getElementById('kursHinzufuegenButton').innerText = 'Änderungen speichern';
-        }
-
-        function kursLoeschen(index) {
-            kurse.splice(index, 1);
-            speichereKurse();
-            aktualisiereGefilterteKurse();
-            zeigeKurseListe();
-        }
-
-        function csvImport() {
-            const fileInput = document.getElementById('csvInput');
-            const file = fileInput.files[0];
-            if (!file) {
-                alert('Bitte wählen Sie eine CSV-Datei aus.');
-                return;
-            }
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const csvData = e.target.result;
-                const rows = csvData.split('\n');
-                rows.forEach(row => {
-                    const columns = row.split(',');
-                    if (columns.length >= 5) {
-                        const [kursnummer, kursname, kursraum, uhrzeit, datum] = columns;
-                        if (kursnummer && kursname && kursraum && uhrzeit && datum) {
-                            const neuerKurs = {
-                                kursnummer: kursnummer.trim(),
-                                kursname: kursname.trim(),
-                                kursraum: kursraum.trim(),
-                                uhrzeit: uhrzeit.trim(),
-                                datum: datum.trim()
-                            };
-                            kurse.push(neuerKurs);
+                        for (let i = 0; i < 4; i++) {
+                            const kurs = anzuzeigendeKurse[i];
+                            if (kurs) {
+                                const kursElement = document.createElement('div');
+                                kursElement.className = 'kurs';
+                                kursElement.innerHTML = `
+                                    <div class="kursInfo">
+                                        <span class="kursZeit">${kurs.uhrzeit}</span>
+                                        <span class="kursNummer">${kurs.kursnummer}</span>
+                                        <span class="kursName">${kurs.kursname}</span>
+                                    </div>
+                                    <span class="kursRaum">${kurs.kursraum}</span>
+                                `;
+                                kurseList.appendChild(kursElement);
+                            } else {
+                                const platzhalter = document.createElement('div');
+                                platzhalter.className = 'kurs';
+                                platzhalter.innerHTML = `
+                                    <div class="kursInfo">
+                                        <span class="kursZeit"></span>
+                                        <span class="kursNummer"></span>
+                                        <span class="kursName"></span>
+                                    </div>
+                                    <span class="kursRaum"></span>
+                                `;
+                                kurseList.appendChild(platzhalter);
+                            }
                         }
                     }
+
+                    kurseList.style.opacity = 1;
+
+                    if (gefilterteKurse.length > 4) {
+                        aktuellerKursIndex += 4;
+                        if (aktuellerKursIndex >= gefilterteKurse.length) {
+                            aktuellerKursIndex = 0;
+                        }
+                        if (kursTimeout) {
+                            clearTimeout(kursTimeout);
+                        }
+                        kursTimeout = setTimeout(zeigeAktuelleKurse, 18000);
+                    } else {
+                        if (kursTimeout) {
+                            clearTimeout(kursTimeout);
+                        }
+                    }
+
+                }, 1000);
+            }
+
+            function sortiereKurse() {
+                const sortierKriterium = document.getElementById('sortierKriterium').value;
+
+                kurse.sort((a, b) => {
+                    switch (sortierKriterium) {
+                        case 'kursnummer':
+                            return a.kursnummer.localeCompare(b.kursnummer);
+                        case 'kursname':
+                            return a.kursname.localeCompare(b.kursname);
+                        case 'kursraum':
+                            return a.kursraum.localeCompare(b.kursraum);
+                        case 'uhrzeit':
+                            return a.uhrzeit.localeCompare(b.uhrzeit);
+                        default:
+                            return 0;
+                    }
                 });
+
+                zeigeKurseListe();
+            }
+
+            function zeigeKurseListe() {
+                const kursListe = document.getElementById('kursListe');
+                kursListe.innerHTML = '';
+
+                kurse.forEach((kurs, index) => {
+                    const kursElement = document.createElement('div');
+                    kursElement.className = 'kurs';
+                    kursElement.innerHTML = `
+                        <div class="kursInfo">
+                            <span class="kursZeit">${kurs.uhrzeit}</span>
+                            <span class="kursNummer">${kurs.kursnummer}</span>
+                            <span class="kursName">${kurs.kursname}</span>
+                            <span class="kursRaum">${kurs.kursraum}</span>
+                        </div>
+                        <button onclick="kursBearbeiten(${index})">Bearbeiten</button>
+                        <button onclick="kursLoeschen(${index})">Löschen</button>
+                    `;
+                    kursListe.appendChild(kursElement);
+                });
+            }
+
+            function kursHinzufuegen() {
+                const kursnummer = document.getElementById('kursNummer').value.trim();
+                const kursname = document.getElementById('kursName').value.trim();
+                const kursraum = document.getElementById('kursRaum').value.trim();
+                const uhrzeit = document.getElementById('kursUhrzeit').value;
+                const datum = document.getElementById('kursDatum').value;
+
+                if (!kursnummer || !kursname || !kursraum || !uhrzeit || !datum) {
+                    alert('Bitte füllen Sie alle Felder aus.');
+                    return;
+                }
+
+                const neuerKurs = {
+                    kursnummer: kursnummer,
+                    kursname: kursname,
+                    kursraum: kursraum,
+                    uhrzeit: uhrzeit,
+                    datum: datum
+                };
+
+                if (currentEditingIndex >= 0) {
+                    kurse[currentEditingIndex] = neuerKurs;
+                    currentEditingIndex = -1;
+                    document.getElementById('kursHinzufuegenButton').innerText = 'Kurs hinzufügen';
+                } else {
+                    kurse.push(neuerKurs);
+                }
+
                 speichereKurse();
                 aktualisiereGefilterteKurse();
                 zeigeKurseListe();
-                fileInput.value = '';
-            };
-            reader.readAsText(file);
-        }
+                sortiereKurse();
 
-        function speichereKurse() {
-            firebase.database().ref('kurse').set(kurse);
-        }
+                document.getElementById('kursNummer').value = '';
+                document.getElementById('kursName').value = '';
+                document.getElementById('kursRaum').value = '';
+                document.getElementById('kursUhrzeit').value = '';
+                document.getElementById('kursDatum').value = '';
+            }
 
-        function ladeKurse() {
-            firebase.database().ref('kurse').on('value', function(snapshot) {
-                const data = snapshot.val();
-                kurse = data ? data : [];
-                aktualisiereGefilterteKurse();
-            });
-        }
+            function kursBearbeiten(index) {
+                const kurs = kurse[index];
+                document.getElementById('kursNummer').value = kurs.kursnummer;
+                document.getElementById('kursName').value = kurs.kursname;
+                document.getElementById('kursRaum').value = kurs.kursraum;
+                document.getElementById('kursUhrzeit').value = kurs.uhrzeit;
+                document.getElementById('kursDatum').value = kurs.datum;
+                currentEditingIndex = index;
+                document.getElementById('kursHinzufuegenButton').innerText = 'Änderungen speichern';
+            }
 
-        function aktualisiereGefilterteKurse() {
-            const jetzt = new Date();
-            const plusMinusAktiv = document.getElementById('plusMinusAktiv').checked;
-            const plusMinusStunden = parseInt(document.getElementById('plusMinusStunden').value) || 2;
+            function kursLoeschen(index) {
+                kurse.splice(index, 1);
+                speichereKurse();
+                sortiereKurse();
+            }
 
-            gefilterteKurse = kurse.filter(kurs => {
-                const kursDatumZeit = new Date(`${kurs.datum}T${kurs.uhrzeit}`);
-                const diffStunden = (kursDatumZeit - jetzt) / (1000 * 60 * 60);
-
-                if (plusMinusAktiv) {
-                    return Math.abs(diffStunden) <= plusMinusStunden;
-                } else {
-                    return diffStunden >= -3 && kursDatumZeit.toDateString() === jetzt.toDateString();
+            function csvImport() {
+                const fileInput = document.getElementById('csvInput');
+                const file = fileInput.files[0];
+                if (!file) {
+                    alert('Bitte wählen Sie eine CSV-Datei aus.');
+                    return;
                 }
-            });
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const csvData = e.target.result;
+                    const rows = csvData.split('\n');
+                    rows.forEach(row => {
+                        const columns = row.split(',');
+                        if (columns.length >= 5) {
+                            const [kursnummer, kursname, kursraum, uhrzeit, datum] = columns;
+                            if (kursnummer && kursname && kursraum && uhrzeit && datum) {
+                                const neuerKurs = {
+                                    kursnummer: kursnummer.trim(),
+                                    kursname: kursname.trim(),
+                                    kursraum: kursraum.trim(),
+                                    uhrzeit: uhrzeit.trim(),
+                                    datum: datum.trim()
+                                };
+                                kurse.push(neuerKurs);
+                            }
+                        }
+                    });
+                    speichereKurse();
+                    sortiereKurse();
+                    fileInput.value = '';
+                };
+                reader.readAsText(file);
+            }
 
-            gefilterteKurse.sort((a, b) => a.uhrzeit.localeCompare(b.uhrzeit));
-            aktuellerKursIndex = 0; // Zurücksetzen, um von vorne zu beginnen
-            zeigeAktuelleKurse();
-        }
+            function speichereKurse() {
+                firebase.database().ref('kurse').set(kurse);
+            }
 
-        window.onload = function() {
-            ladeKurse();
-            setInterval(aktualisiereGefilterteKurse, 60000); // Aktualisiere jede Minute
-        };
-    </script>
+            function ladeKurse() {
+                firebase.database().ref('kurse').on('value', function(snapshot) {
+                    const data = snapshot.val();
+                    kurse = data ? data : [];
+                    sortiereKurse();
+                });
+            }
+
+            function aktualisiereGefilterteKurse() {
+                const jetzt = new Date();
+                const plusMinusAktiv = document.getElementById('plusMinusAktiv').checked;
+                const plusMinusStunden = parseInt(document.getElementById('plusMinusStunden').value) || 2;
+
+                gefilterteKurse = kurse.filter(kurs => {
+                    const kursDatumZeit = new Date(`${kurs.datum}T${kurs.uhrzeit}`);
+                    const diffStunden = (kursDatumZeit - jetzt) / (1000 * 60 * 60);
+
+                    if (plusMinusAktiv) {
+                        return Math.abs(diffStunden) <= plusMinusStunden;
+                    } else {
+                        return diffStunden >= -3 && kursDatumZeit.toDateString() === jetzt.toDateString();
+                    }
+                });
+
+                gefilterteKurse.sort((a, b) => a.uhrzeit.localeCompare(b.uhrzeit));
+                aktuellerKursIndex = 0;
+                zeigeAktuelleKurse();
+            }
+
+            function scaleContent() {
+                const container = document.getElementById('scaleContainer');
+                const scaleX = window.innerWidth / 1920;
+                const scaleY = window.innerHeight / 1080;
+                const scale = Math.min(scaleX, scaleY);
+                container.style.transform = `scale(${scale})`;
+            }
+
+            window.onload = function() {
+                ladeKurse();
+                setInterval(aktualisiereGefilterteKurse, 60000);
+                scaleContent();
+            };
+
+            window.addEventListener('resize', scaleContent);
+        </script>
+    </div>
 </body>
 </html>
