@@ -2,9 +2,12 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=1920, initial-scale=1.0">
     <title>Kursanzeige VHS Steiermark</title>
+    <!-- Einbindung von Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- Einbindung von Font Awesome für das Augensymbol -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body, html {
             margin: 0;
@@ -18,8 +21,8 @@
         }
 
         #scaleContainer {
-            width: 1920px; /* Anpassen an die Breite Ihres Originaldesigns */
-            height: 1080px; /* Anpassen an die Höhe Ihres Originaldesigns */
+            width: 1920px;
+            height: 1080px;
             transform-origin: top left;
             position: absolute;
             top: 0;
@@ -149,26 +152,59 @@
             box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
         }
 
+        #eingabeFormularInner {
+            display: flex;
+        }
+
         #eingabeBereich {
             width: 50%;
-            float: left;
+        }
+
+        #kursListeBereich {
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+            padding-left: 20px;
+            border-left: 2px solid #ccc;
+        }
+
+        #sortierOptionen {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        #sortierOptionen label {
+            margin-right: 10px;
+        }
+
+        #sortierKriterium {
+            margin-right: 20px;
+        }
+
+        #wochentagButtons {
+            display: flex;
+        }
+
+        #wochentagButtons button {
+            padding: 5px 10px;
+            margin-right: 5px;
+            font-size: 1em;
+            cursor: pointer;
         }
 
         #kursListe {
-            width: 45%;
+            flex-grow: 1;
             max-height: 70vh;
             overflow-y: auto;
-            padding-left: 20px;
-            border-left: 2px solid #ccc;
-            float: right;
         }
 
-        #eingabeFormular .kurs {
+        #kursListe .kurs {
             font-size: 1em;
             padding: 10px 0;
         }
 
-        #eingabeFormular .kurs button {
+        #kursListe .kurs button {
             font-size: 0.9em;
             padding: 5px 10px;
         }
@@ -186,6 +222,54 @@
 
         button {
             cursor: pointer;
+        }
+
+        /* Modal-Styles */
+        #pinModal {
+            display: none; /* Modal ist standardmäßig verborgen */
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5); /* Halbtransparentes schwarzes Overlay */
+        }
+
+        #pinModalContent {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 40px;
+            border: 1px solid #888;
+            width: 30%;
+            border-radius: 10px;
+            text-align: center;
+            position: relative;
+        }
+
+        #pinModalContent input[type="password"],
+        #pinModalContent input[type="text"] {
+            width: 80%;
+            padding: 12px 20px;
+            margin: 10px 0;
+            font-size: 1.2em;
+        }
+
+        #pinModalContent button {
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 1.2em;
+            cursor: pointer;
+        }
+
+        #togglePinVisibility {
+            position: absolute;
+            right: 15%;
+            top: 47%;
+            cursor: pointer;
+            font-size: 1.5em;
+            color: #888;
         }
     </style>
 </head>
@@ -206,39 +290,64 @@
         </div>
 
         <div id="eingabeFormular">
-            <div id="eingabeBereich">
-                <label for="kursNummer">Kursnummer:</label><br>
-                <input type="text" id="kursNummer" placeholder="Kursnummer"><br>
-                <label for="kursName">Kursname:</label><br>
-                <input type="text" id="kursName" placeholder="Kursname"><br>
-                <label for="kursRaum">Kursraum:</label><br>
-                <input type="text" id="kursRaum" placeholder="Kursraum"><br>
-                <label for="kursUhrzeit">Uhrzeit:</label><br>
-                <input type="time" id="kursUhrzeit"><br>
-                <label for="kursDatum">Datum:</label><br>
-                <input type="date" id="kursDatum"><br>
-                <button id="kursHinzufuegenButton" onclick="kursHinzufuegen()">Kurs hinzufügen</button><br>
-                <label for="plusMinusAktiv">± Stunden Funktion aktiv:</label>
-                <input type="checkbox" id="plusMinusAktiv"><br>
-                <label for="plusMinusStunden">± Stunden einstellen:</label>
-                <input type="number" id="plusMinusStunden" value="2"><br>
-                <label for="csvInput">CSV-Import:</label>
-                <input type="file" id="csvInput" accept=".csv"><br>
-                <button onclick="csvImport()">Kurse erstellen</button><br>
-            </div>
+            <div id="eingabeFormularInner">
+                <div id="eingabeBereich">
+                    <label for="kursNummer">Kursnummer:</label><br>
+                    <input type="text" id="kursNummer" placeholder="Kursnummer"><br>
+                    <label for="kursName">Kursname:</label><br>
+                    <input type="text" id="kursName" placeholder="Kursname"><br>
+                    <label for="kursRaum">Kursraum:</label><br>
+                    <input type="text" id="kursRaum" placeholder="Kursraum"><br>
+                    <label for="kursUhrzeit">Uhrzeit:</label><br>
+                    <input type="time" id="kursUhrzeit"><br>
+                    <label for="kursDatum">Datum:</label><br>
+                    <input type="date" id="kursDatum"><br>
+                    <button id="kursHinzufuegenButton" onclick="kursHinzufuegen()">Kurs hinzufügen</button><br>
+                    <label for="plusMinusAktiv">± Stunden Funktion aktiv:</label>
+                    <input type="checkbox" id="plusMinusAktiv"><br>
+                    <label for="plusMinusStunden">± Stunden einstellen:</label>
+                    <input type="number" id="plusMinusStunden" value="2"><br>
+                    <label for="csvInput">CSV-Import:</label>
+                    <input type="file" id="csvInput" accept=".csv"><br>
+                    <button onclick="csvImport()">Kurse erstellen</button><br>
+                </div>
 
-            <div id="sortierOptionen">
-                <label for="sortierKriterium">Sortieren nach:</label>
-                <select id="sortierKriterium" onchange="sortiereKurse()">
-                    <option value="kursnummer">Kursnummer</option>
-                    <option value="kursname">Kursname</option>
-                    <option value="kursraum">Kursraum</option>
-                    <option value="uhrzeit">Uhrzeit</option>
-                </select>
+                <div id="kursListeBereich">
+                    <div id="sortierOptionen">
+                        <label for="sortierKriterium">Sortieren nach:</label>
+                        <select id="sortierKriterium" onchange="sortiereKurse()">
+                            <option value="kursnummer">Kursnummer</option>
+                            <option value="kursname">Kursname</option>
+                            <option value="kursraum">Kursraum</option>
+                            <option value="uhrzeit">Uhrzeit</option>
+                        </select>
+                        <div id="wochentagButtons">
+                            <button onclick="filterByDay(1)">Mo</button>
+                            <button onclick="filterByDay(2)">Di</button>
+                            <button onclick="filterByDay(3)">Mi</button>
+                            <button onclick="filterByDay(4)">Do</button>
+                            <button onclick="filterByDay(5)">Fr</button>
+                            <button onclick="filterByDay(6)">Sa</button>
+                            <button onclick="filterByDay(null)">Alle</button>
+                        </div>
+                    </div>
+                    <div id="kursListe"></div>
+                </div>
             </div>
-
-            <div id="kursListe"></div>
         </div>
+
+        <!-- PIN-Code Modal -->
+        <div id="pinModal">
+            <div id="pinModalContent">
+                <h2>PIN-Code eingeben</h2>
+                <input type="password" id="pinInput" placeholder="PIN-Code eingeben">
+                <i id="togglePinVisibility" class="fas fa-eye"></i>
+                <br>
+                <button id="pinOkButton">OK</button>
+                <button id="pinCancelButton">Abbrechen</button>
+            </div>
+        </div>
+
         <!-- Firebase SDKs -->
         <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
         <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
@@ -262,10 +371,24 @@
             let kurse = [];
             let gefilterteKurse = [];
             let aktuellerKursIndex = 0;
-            let currentEditingIndex = -1;
+            let currentEditingId = null;
             let kursTimeout;
+            let pinEingeloggt = false;
+            let pinZeitstempel = null;
+            const PIN_CODE = "1504";
+            const PIN_GUELTIGKEITSDAUER = 10 * 60 * 1000; // 10 Minuten in Millisekunden
+            let aktuellerWochentagFilter = null;
 
             function toggleAnsicht() {
+                if (!pinEingeloggt || (Date.now() - pinZeitstempel > PIN_GUELTIGKEITSDAUER)) {
+                    // Modal anzeigen
+                    document.getElementById('pinModal').style.display = 'block';
+                } else {
+                    wechsleAnsicht();
+                }
+            }
+
+            function wechsleAnsicht() {
                 const formular = document.getElementById('eingabeFormular');
                 const container = document.getElementById('kursContainer');
 
@@ -279,6 +402,42 @@
                     aktualisiereGefilterteKurse();
                 }
             }
+
+            // Event-Listener für das Augensymbol
+            document.getElementById('togglePinVisibility').addEventListener('click', function() {
+                const pinInput = document.getElementById('pinInput');
+                const icon = document.getElementById('togglePinVisibility');
+                if (pinInput.type === 'password') {
+                    pinInput.type = 'text';
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                } else {
+                    pinInput.type = 'password';
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                }
+            });
+
+            // Event-Listener für den OK-Button im Modal
+            document.getElementById('pinOkButton').addEventListener('click', function() {
+                const eingegebenerPin = document.getElementById('pinInput').value;
+                if (eingegebenerPin === PIN_CODE) {
+                    pinEingeloggt = true;
+                    pinZeitstempel = Date.now();
+                    document.getElementById('pinModal').style.display = 'none';
+                    document.getElementById('pinInput').value = ''; // Eingabefeld leeren
+                    wechsleAnsicht();
+                } else {
+                    alert("Falscher PIN-Code.");
+                    document.getElementById('pinInput').value = ''; // Eingabefeld leeren
+                }
+            });
+
+            // Event-Listener für den Abbrechen-Button im Modal
+            document.getElementById('pinCancelButton').addEventListener('click', function() {
+                document.getElementById('pinModal').style.display = 'none';
+                document.getElementById('pinInput').value = ''; // Eingabefeld leeren
+            });
 
             function zeigeAktuelleKurse() {
                 const kurseList = document.getElementById('kurseList');
@@ -351,7 +510,7 @@
                 kurse.sort((a, b) => {
                     switch (sortierKriterium) {
                         case 'kursnummer':
-                            return a.kursnummer.localeCompare(b.kursnummer);
+                            return parseInt(a.kursnummer) - parseInt(b.kursnummer);
                         case 'kursname':
                             return a.kursname.localeCompare(b.kursname);
                         case 'kursraum':
@@ -370,7 +529,18 @@
                 const kursListe = document.getElementById('kursListe');
                 kursListe.innerHTML = '';
 
-                kurse.forEach((kurs, index) => {
+                let angezeigteKurse = kurse;
+
+                if (aktuellerWochentagFilter !== null) {
+                    angezeigteKurse = angezeigteKurse.filter(kurs => {
+                        const kursDatum = new Date(kurs.datum);
+                        let wochentag = kursDatum.getDay();
+                        if (wochentag === 0) wochentag = 7; // Sonntag zu 7 machen
+                        return wochentag === aktuellerWochentagFilter;
+                    });
+                }
+
+                angezeigteKurse.forEach(kurs => {
                     const kursElement = document.createElement('div');
                     kursElement.className = 'kurs';
                     kursElement.innerHTML = `
@@ -380,11 +550,16 @@
                             <span class="kursName">${kurs.kursname}</span>
                             <span class="kursRaum">${kurs.kursraum}</span>
                         </div>
-                        <button onclick="kursBearbeiten(${index})">Bearbeiten</button>
-                        <button onclick="kursLoeschen(${index})">Löschen</button>
+                        <button onclick="kursBearbeiten('${kurs.id}')">Bearbeiten</button>
+                        <button onclick="kursLoeschen('${kurs.id}')">Löschen</button>
                     `;
                     kursListe.appendChild(kursElement);
                 });
+            }
+
+            function filterByDay(wochentag) {
+                aktuellerWochentagFilter = wochentag;
+                zeigeKurseListe();
             }
 
             function kursHinzufuegen() {
@@ -400,6 +575,7 @@
                 }
 
                 const neuerKurs = {
+                    id: currentEditingId || Date.now().toString(),
                     kursnummer: kursnummer,
                     kursname: kursname,
                     kursraum: kursraum,
@@ -407,19 +583,22 @@
                     datum: datum
                 };
 
-                if (currentEditingIndex >= 0) {
-                    kurse[currentEditingIndex] = neuerKurs;
-                    currentEditingIndex = -1;
+                if (currentEditingId) {
+                    const kursIndex = kurse.findIndex(kurs => kurs.id === currentEditingId);
+                    if (kursIndex !== -1) {
+                        kurse[kursIndex] = neuerKurs;
+                    }
+                    currentEditingId = null;
                     document.getElementById('kursHinzufuegenButton').innerText = 'Kurs hinzufügen';
                 } else {
                     kurse.push(neuerKurs);
                 }
 
-                speichereKurse();
-                aktualisiereGefilterteKurse();
-                zeigeKurseListe();
                 sortiereKurse();
+                zeigeKurseListe();
+                speichereKurse();
 
+                // Eingabefelder leeren
                 document.getElementById('kursNummer').value = '';
                 document.getElementById('kursName').value = '';
                 document.getElementById('kursRaum').value = '';
@@ -427,21 +606,27 @@
                 document.getElementById('kursDatum').value = '';
             }
 
-            function kursBearbeiten(index) {
-                const kurs = kurse[index];
-                document.getElementById('kursNummer').value = kurs.kursnummer;
-                document.getElementById('kursName').value = kurs.kursname;
-                document.getElementById('kursRaum').value = kurs.kursraum;
-                document.getElementById('kursUhrzeit').value = kurs.uhrzeit;
-                document.getElementById('kursDatum').value = kurs.datum;
-                currentEditingIndex = index;
-                document.getElementById('kursHinzufuegenButton').innerText = 'Änderungen speichern';
+            function kursBearbeiten(id) {
+                const kurs = kurse.find(kurs => kurs.id === id);
+                if (kurs) {
+                    document.getElementById('kursNummer').value = kurs.kursnummer;
+                    document.getElementById('kursName').value = kurs.kursname;
+                    document.getElementById('kursRaum').value = kurs.kursraum;
+                    document.getElementById('kursUhrzeit').value = kurs.uhrzeit;
+                    document.getElementById('kursDatum').value = kurs.datum;
+                    currentEditingId = kurs.id;
+                    document.getElementById('kursHinzufuegenButton').innerText = 'Änderungen speichern';
+                }
             }
 
-            function kursLoeschen(index) {
-                kurse.splice(index, 1);
-                speichereKurse();
-                sortiereKurse();
+            function kursLoeschen(id) {
+                const kursIndex = kurse.findIndex(kurs => kurs.id === id);
+                if (kursIndex !== -1) {
+                    kurse.splice(kursIndex, 1);
+                    sortiereKurse();
+                    zeigeKurseListe();
+                    speichereKurse();
+                }
             }
 
             function csvImport() {
@@ -461,6 +646,7 @@
                             const [kursnummer, kursname, kursraum, uhrzeit, datum] = columns;
                             if (kursnummer && kursname && kursraum && uhrzeit && datum) {
                                 const neuerKurs = {
+                                    id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
                                     kursnummer: kursnummer.trim(),
                                     kursname: kursname.trim(),
                                     kursraum: kursraum.trim(),
@@ -471,8 +657,9 @@
                             }
                         }
                     });
-                    speichereKurse();
                     sortiereKurse();
+                    zeigeKurseListe();
+                    speichereKurse();
                     fileInput.value = '';
                 };
                 reader.readAsText(file);
@@ -483,10 +670,12 @@
             }
 
             function ladeKurse() {
-                firebase.database().ref('kurse').on('value', function(snapshot) {
+                firebase.database().ref('kurse').once('value').then(function(snapshot) {
                     const data = snapshot.val();
                     kurse = data ? data : [];
                     sortiereKurse();
+                    zeigeKurseListe();
+                    aktualisiereGefilterteKurse();
                 });
             }
 
@@ -526,6 +715,10 @@
             };
 
             window.addEventListener('resize', scaleContent);
+            window.addEventListener('beforeunload', function () {
+                pinEingeloggt = false;
+                pinZeitstempel = null;
+            });
         </script>
     </div>
 </body>
